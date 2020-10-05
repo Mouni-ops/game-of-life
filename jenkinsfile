@@ -1,15 +1,32 @@
-node ('HRMS && QA') {
-    stage('git') {
-        git 'https://github.com/Mouni-ops/game-of-life.git'
+pipeline {
+    agent {
+        Label 'HRMS &&QA' 
     }
-    stage('build') {
-        sh 'mvn clean package'
+    triggers {
+        cron('H */4 * * 1-5')
     }
-    stage('testresults') {
-        junit 'gameoflife-web/target/surefire-reports/*.xml'
+    stages {
+        stage ('git') {
+            stpes {
+                git "https://github.com/Mouni-ops/game-of-life.git"
+            }
+        }
+        stage ('build') {
+            steps {
+                sh 'mvn clean package'
+            }
+        }
+        stage ('test results') {
+            steps {
+                junit 'gameoflife-web/target/surefire-reports/*.xml'
+            }
+        }
+        stage ('archiveartifacts') {
+            steps {
+                archiveArtifacts artifacts: 'gameoflife-web/target/*.war', followSymlinks: false	
+            }
+        }          
     }
-    stage('archiveartifacts') {
-        archiveArtifacts artifacts: 'gameoflife-web/target/*.war', followSymlinks: false
+        
 
-    }
 }

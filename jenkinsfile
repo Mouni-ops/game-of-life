@@ -2,13 +2,33 @@ pipeline {
     agent {
         label ('HRMS &&QA')
     }
+    parameters {
+        string (
+            name:'testresults',
+            defaultValue: 'gameoflife-web/target/surefire-reports/*.xml',
+            description: 'to get test results'
+        )
+        string (
+            name: 'artifactresults',
+            defaultValue: 'gameoflife-web/target/*.war',
+            description: 'archiving the test results'
+        )
+        choice (
+            name:'brancheTobuild',
+            choices: ['DeclarativePipeline', 'ScriptedPipeline', 'master'],
+            description: 'Branch to be build'
+        )
+
+        
+    }
     triggers {
         cron('H */4 * * 1-5')
     }
     stages {
         stage('git') {        
             steps {
-                git 'https://github.com/Mouni-ops/game-of-life.git'
+                git branch: "${params.brancheTobuild}",
+                url:'https://github.com/Mouni-ops/game-of-life.git'
             }
         }
         stage('build') {
@@ -16,16 +36,13 @@ pipeline {
                 sh 'mvn clean package'
             }
         }
-        stage('test results') {
+        stage('postbuild') {
             steps {
-                junit 'gameoflife-web/target/surefire-reports/*.xml'
+                junit testResults: "${params.testresults}"
+                archive includes: "${params.artifactresults}"
             }
         }
-        stage('archiveartifacts') {
-            steps {
-                archiveArtifacts artifacts: 'gameoflife-web/target/*.war', followSymlinks: false	
-            }
-        }          
+               
     }
         
 

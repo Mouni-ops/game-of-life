@@ -1,27 +1,27 @@
 pipeline {
     agent {
-        Label 'HRMS &&QA' 
+        label ('HRMS &&QA')
     }
     triggers {
         cron('H */4 * * 1-5')
     }
     stages {
-        stage ('git') {
-            stpes {
-                git "https://github.com/Mouni-ops/game-of-life.git"
+        stage('git') {        
+            steps {
+                git 'https://github.com/Mouni-ops/game-of-life.git'
             }
         }
-        stage ('build') {
+        stage('build') {
             steps {
                 sh 'mvn clean package'
             }
         }
-        stage ('test results') {
+        stage('test results') {
             steps {
                 junit 'gameoflife-web/target/surefire-reports/*.xml'
             }
         }
-        stage ('archiveartifacts') {
+        stage('archiveartifacts') {
             steps {
                 archiveArtifacts artifacts: 'gameoflife-web/target/*.war', followSymlinks: false	
             }

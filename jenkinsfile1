@@ -1,5 +1,5 @@
 pipeline {
-    agent ('mouniika-node')
+    agent { label 'mouniika-node' }
     stages {
         stage ('git') {
             steps {
@@ -8,14 +8,15 @@ pipeline {
             }
         }
         stage ('build') {
+            
             steps {
-                mvn package
+                sh 'mvn package'
             }
         }
         stage ('postbuild') {
             steps {
-                junit TestResultsPath: "gameoflife-web/target/surefire-reports/*.xml
-                ArtifactsToBeArchive : "gameoflife-web/target/*.war
+                junit testResults: "gameoflife-web/target/surefire-reports/*.xml"
+                
             }
         }
 

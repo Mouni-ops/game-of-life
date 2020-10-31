@@ -1,4 +1,4 @@
-node ('HRMS && QA') {
+node ('mouniika-node') {
     stage('git') {
         git 'https://github.com/Mouni-ops/game-of-life.git'
     }
